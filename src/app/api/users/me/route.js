@@ -1,18 +1,24 @@
 import { connect } from "@/config/mongodb.config";
-import { getDatafromToken } from "@/helpers/getDatafromToken";
 import User from "@/models/user.model";
-import { NextResponse } from "next/server";
+import {  NextRequest, NextResponse } from "next/server";
+import { getDatafromToken } from "@/helpers/getDatafromToken";
 
 connect();
 
-export async function POST(request) {
+export async function POST(NextRequest) {
   try {
-    const userId = await getDatafromToken(request);
-    const user = User.findOne({ _id: userId }).select("-password");
+    const userId = await getDatafromToken(NextRequest);
 
-    // If there is no user
-    return NextResponse.json({ message: "User found" }, { status: 200 });
+    const user = await User.findOne({_id: userId}).select("-password");
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message:"User found", data: user }, { status: 200 });
+
   } catch (error) {
-    return NextResponse.json({ error: error.message, data: user });
+    console.error("Error fetching user details:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
