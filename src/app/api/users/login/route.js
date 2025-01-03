@@ -1,6 +1,6 @@
 import { connect } from "@/config/mongodb.config";
 import User from "@/models/user.model";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
